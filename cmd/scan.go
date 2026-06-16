@@ -62,14 +62,14 @@ var scanCmd = &cobra.Command{
 			procName := lipgloss.NewStyle().Foreground(cliAccent).Bold(true).Render(info.Process)
 
 			cardContent = fmt.Sprintf(
-				"%s Port %d is currently blocked!\n\n🔥 Process:  %s\n🆔 PID:      %d\n🌐 Protocol: %s",
+				"%s Port %d is blocked!\n\nProcess:  %s\nPID:      %d\nProtocol: %s",
 				status, port, procName, info.PID, info.Protocol,
 			)
 		} else {
 			// Free
 			status := cliSuccessBadge.Render(" FREE ")
 			cardContent = fmt.Sprintf(
-				"%s Port %d is free and available!\n\n🚀 You can bind any service to this port.",
+				"%s Port %d is free and available.\n\nYou can bind any service to this port.",
 				status, port,
 			)
 		}

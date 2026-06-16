@@ -244,7 +244,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "ctrl+r":
 			m.refresh()
-			m.statusMessage = "🔄 Port list updated successfully!"
+			m.statusMessage = "Port list updated!"
 			m.statusType = "info"
 			return m, nil
 
@@ -253,7 +253,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				break
 			}
 			m.refresh()
-			m.statusMessage = "🔄 Port list updated successfully!"
+			m.statusMessage = "Port list updated!"
 			m.statusType = "info"
 			return m, nil
 
@@ -324,10 +324,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if pidToKill > 0 {
 				err := utils.KillProcess(pidToKill)
 				if err != nil {
-					m.statusMessage = fmt.Sprintf("❌ Failed to kill process %s (PID %d): %v", procName, pidToKill, err)
+					m.statusMessage = fmt.Sprintf("Error: Failed to kill process %s (PID %d): %v", procName, pidToKill, err)
 					m.statusType = "error"
 				} else {
-					m.statusMessage = fmt.Sprintf("✅ Freed port %d by killing %s (PID %d)!", portKilled, procName, pidToKill)
+					m.statusMessage = fmt.Sprintf("Success: Freed port %d by killing %s (PID %d)", portKilled, procName, pidToKill)
 					m.statusType = "success"
 					if m.activeTab == TabInspect {
 						m.portInput.SetValue("")
@@ -335,7 +335,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.refresh()
 				}
 			} else {
-				m.statusMessage = "ℹ️ No running process selected to terminate."
+				m.statusMessage = "No running process selected."
 				m.statusType = "info"
 			}
 			return m, nil
@@ -381,7 +381,7 @@ func (m Model) View() string {
 	statusLine := m.renderStatus()
 
 	// Title
-	header := titleStyle.Render("⚡ WHO IS RUNNING? ⚡")
+	header := titleStyle.Render(" WHO IS RUNNING ")
 
 	// Tabs
 	tabs := m.renderTabs()
@@ -445,20 +445,20 @@ func (m Model) viewInspectTab() string {
 	} else {
 		port, err := strconv.Atoi(val)
 		if err != nil {
-			body = cardStyle.Render(fmt.Sprintf("⚠️ Invalid port number: %s", val))
+			body = cardStyle.Render(fmt.Sprintf("Invalid port number: %s", val))
 		} else {
 			if info, exists := m.activePorts[port]; exists {
 				status := errorBadge.Render(" IN USE ")
-				processInfo := fmt.Sprintf("🔥 Process:  %s\n🆔 PID:      %d\n🌐 Protocol: %s",
+				processInfo := fmt.Sprintf("Process:  %s\nPID:      %d\nProtocol: %s",
 					lipgloss.NewStyle().Foreground(accentColor).Bold(true).Render(info.Process),
 					info.PID,
 					info.Protocol)
-				action := lipgloss.NewStyle().Foreground(errorColor).Bold(true).Render("\n💀 Press [K] to kill this process and free the port.")
+				action := lipgloss.NewStyle().Foreground(errorColor).Bold(true).Render("\nPress [K] to kill this process and free the port.")
 
 				body = cardStyle.Render(fmt.Sprintf("%s Port %d is currently blocked!\n\n%s\n%s", status, port, processInfo, action))
 			} else {
 				status := successBadge.Render(" FREE ")
-				body = cardStyle.Render(fmt.Sprintf("%s Port %d is free and available!\n\n🚀 You can bind any service to this port.", status, port))
+				body = cardStyle.Render(fmt.Sprintf("%s Port %d is free and available.\n\nYou can bind any service to this port.", status, port))
 			}
 		}
 	}
@@ -505,7 +505,7 @@ func (m Model) viewCommonPortsTab() string {
 	if m.selectedIndex >= 0 && m.selectedIndex < len(m.commonPorts) {
 		selectedPort := m.commonPorts[m.selectedIndex]
 		if _, exists := m.activePorts[selectedPort]; exists {
-			help = lipgloss.NewStyle().Foreground(errorColor).Bold(true).Render("\n💀 Press [K] to kill process on selected port.")
+			help = lipgloss.NewStyle().Foreground(errorColor).Bold(true).Render("\nPress [K] to kill process on selected port.")
 		}
 	}
 
@@ -539,7 +539,7 @@ func (m Model) viewActivePortsTab() string {
 	if len(m.searchPorts) > 0 && m.selectedIndex >= 0 && m.selectedIndex < len(m.searchPorts) {
 		selectedPort := m.searchPorts[m.selectedIndex]
 		if _, exists := m.activePorts[selectedPort]; exists {
-			help = lipgloss.NewStyle().Foreground(errorColor).Bold(true).Render("\n💀 Press [K] to kill process on selected port.")
+			help = lipgloss.NewStyle().Foreground(errorColor).Bold(true).Render("\nPress [K] to kill process on selected port.")
 		}
 	}
 
