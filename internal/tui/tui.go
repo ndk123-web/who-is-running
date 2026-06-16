@@ -513,15 +513,39 @@ func (m Model) viewCommonPortsTab() string {
 }
 
 func (m Model) viewActivePortsTab() string {
-	searchBar := fmt.Sprintf("Search (Port or Process): %s", m.searchInput.View())
-
+	var paginationInfo string
 	var rows []string
 	rows = append(rows, tableHeaderStyle.Render(fmt.Sprintf("%-6s %-25s %-8s %-10s", "Port", "Process", "PID", "Protocol")))
 
 	if len(m.searchPorts) == 0 {
 		rows = append(rows, rowStyle.Render("No active ports found matching search."))
 	} else {
-		for i, port := range m.searchPorts {
+		// Calculate available height for rows
+		maxRows := m.height - 12
+		if maxRows <= 0 {
+			maxRows = 10 // safe fallback
+		}
+
+		startIdx := 0
+		endIdx := len(m.searchPorts)
+
+		if len(m.searchPorts) > maxRows {
+			startIdx = m.selectedIndex - (maxRows / 2)
+			if startIdx < 0 {
+				startIdx = 0
+			}
+			endIdx = startIdx + maxRows
+			if endIdx > len(m.searchPorts) {
+				endIdx = len(m.searchPorts)
+				startIdx = endIdx - maxRows
+			}
+			paginationInfo = lipgloss.NewStyle().Foreground(mutedCol).Render(
+				fmt.Sprintf(" (Showing %d-%d of %d, use arrows to scroll)", startIdx+1, endIdx, len(m.searchPorts)),
+			)
+		}
+
+		for i := startIdx; i < endIdx; i++ {
+			port := m.searchPorts[i]
 			info := m.activePorts[port]
 			rowContent := fmt.Sprintf("%-6d %-25s %-8d %-10s", port, info.Process, info.PID, info.Protocol)
 
@@ -533,6 +557,7 @@ func (m Model) viewActivePortsTab() string {
 		}
 	}
 
+	searchBar := fmt.Sprintf("Search (Port or Process): %s%s", m.searchInput.View(), paginationInfo)
 	list := lipgloss.JoinVertical(lipgloss.Left, rows...)
 
 	var help string
