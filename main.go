@@ -1,9 +1,11 @@
+/*
+Copyright © 2026 NAME HERE <EMAIL ADDRESS>
+
+*/
 package main
 
-import (
-	"github.com/ndk123-web/who-is-running/internal/utils"
-)
+import "github.com/ndk123-web/who-is-running/cmd"
 
 func main() {
-	utils.ScanSinglePort(8000)
+	cmd.Execute()
 }
