@@ -204,7 +204,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.statusMessage = ""
 
 		switch msg.String() {
-		case "ctrl+c", "q":
+		case "ctrl+c":
+			return m, tea.Quit
+
+		case "q":
+			if m.activeTab == TabActive {
+				break
+			}
 			return m, tea.Quit
 
 		case "tab":
@@ -216,18 +222,36 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 
 		case "a", "A":
+			if m.activeTab == TabActive {
+				break
+			}
 			m.switchTab(TabInspect)
 			return m, nil
 
 		case "b", "B":
+			if m.activeTab == TabActive {
+				break
+			}
 			m.switchTab(TabCommon)
 			return m, nil
 
 		case "c", "C":
+			if m.activeTab == TabActive {
+				break
+			}
 			m.switchTab(TabActive)
 			return m, nil
 
+		case "ctrl+r":
+			m.refresh()
+			m.statusMessage = "🔄 Port list updated successfully!"
+			m.statusType = "info"
+			return m, nil
+
 		case "r", "R":
+			if m.activeTab == TabActive {
+				break
+			}
 			m.refresh()
 			m.statusMessage = "🔄 Port list updated successfully!"
 			m.statusType = "info"
@@ -257,7 +281,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 
-		case "k", "K":
+		case "ctrl+k", "k", "K":
+			keyStr := msg.String()
+			if (keyStr == "k" || keyStr == "K") && m.activeTab == TabActive {
+				break
+			}
+
 			var pidToKill int
 			var portKilled int
 			var procName string
@@ -360,9 +389,9 @@ func (m Model) View() string {
 	// Footer instructions
 	var footer string
 	if m.activeTab == TabInspect {
-		footer = footerStyle.Render("F1-F3 / Tab: Switch Tab • R: Refresh • K: Kill Process • Q: Quit")
+		footer = footerStyle.Render("a-c / Tab: Switch Tab • R: Refresh • K: Kill Process • Q: Quit")
 	} else {
-		footer = footerStyle.Render("F1-F3 / Tab: Switch Tab • ↑/↓: Scroll List • R: Refresh • K: Kill Process • Q: Quit")
+		footer = footerStyle.Render("a-c / Tab: Switch Tab • ↑/↓: Scroll List • R: Refresh • K: Kill Process • Q: Quit")
 	}
 
 	return lipgloss.JoinVertical(
@@ -377,7 +406,7 @@ func (m Model) View() string {
 }
 
 func (m Model) renderTabs() string {
-	tabs := []string{"[F1] Inspect Port", "[F2] Common Ports", "[F3] Active Listening"}
+	tabs := []string{"[a] Inspect Port", "[b] Common Ports", "[c] Active Listening"}
 	var renderedTabs []string
 	for i, t := range tabs {
 		if i == m.activeTab {
