@@ -211,15 +211,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.switchTab((m.activeTab + 1) % 3)
 			return m, nil
 
-		case "1":
+		case "shift+tab":
+			m.switchTab((m.activeTab + 2) % 3)
+			return m, nil
+
+		case "a", "A":
 			m.switchTab(TabInspect)
 			return m, nil
 
-		case "2":
+		case "b", "B":
 			m.switchTab(TabCommon)
 			return m, nil
 
-		case "3":
+		case "c", "C":
 			m.switchTab(TabActive)
 			return m, nil
 
@@ -356,9 +360,9 @@ func (m Model) View() string {
 	// Footer instructions
 	var footer string
 	if m.activeTab == TabInspect {
-		footer = footerStyle.Render("Tab: Switch Tab • R: Refresh • K: Kill Process • Q: Quit")
+		footer = footerStyle.Render("F1-F3 / Tab: Switch Tab • R: Refresh • K: Kill Process • Q: Quit")
 	} else {
-		footer = footerStyle.Render("Tab: Switch Tab • ↑/↓: Scroll List • R: Refresh • K: Kill Process • Q: Quit")
+		footer = footerStyle.Render("F1-F3 / Tab: Switch Tab • ↑/↓: Scroll List • R: Refresh • K: Kill Process • Q: Quit")
 	}
 
 	return lipgloss.JoinVertical(
@@ -373,7 +377,7 @@ func (m Model) View() string {
 }
 
 func (m Model) renderTabs() string {
-	tabs := []string{"[1] Inspect Port", "[2] Common Ports", "[3] Active Listening"}
+	tabs := []string{"[F1] Inspect Port", "[F2] Common Ports", "[F3] Active Listening"}
 	var renderedTabs []string
 	for i, t := range tabs {
 		if i == m.activeTab {
