@@ -2,7 +2,9 @@
 
 A fast, lightweight command-line utility to check which processes are occupying ports on your machine, featuring a clean interactive terminal dashboard (TUI).
 
-https://github.com/ndk123-web/who-is-running/blob/main/public/who-is-running.webm
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/352881c3-2c7f-4ddf-ba08-cb42b202dabc" width="100%" controls autoplay loop muted></video>
+</p>
 
 ---
 
